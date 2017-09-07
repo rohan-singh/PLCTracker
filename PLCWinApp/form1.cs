@@ -1,85 +1,61 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using DataAccessLayer;
+using System.Xml.Serialization;
+using System.IO;
 
-namespace PLCTracker
+namespace DataAccessLayer
 {
-    public partial class Form1 : Form
+    public class serialization
     {
-        public Form1()
+        public static List<properties> read()
         {
-            InitializeComponent();
-            // creating table layout panel
-            createPanel();
+            //creating the objects
+            properties details1 = new properties();
+            details1.ipaddress = "103.34.56.213";
+            details1.owner = "Kejin";
+            details1.status = "Active";
+            details1.user = "Nil";
+
+            properties details2 = new properties();
+            details2.ipaddress = "172.168.0.1";
+            details2.owner = "Rohan";
+            details2.status = "Active";
+            details2.user = "Nil";
+
+
+            //adding the objects to the list
+            List<properties> plcdetails = new List<properties>();
+            plcdetails.Add(details1);
+            plcdetails.Add(details2);
+            Serialize(plcdetails);
+
+            List<properties> readdetails = new List<properties>();
+            XmlSerializer xml = new XmlSerializer(typeof(List<properties>));
+            FileStream f = File.Open("E:\\plc.xml", FileMode.Open, FileAccess.Read);
+            readdetails = (List<properties>)xml.Deserialize(f);
+
+
+            //var detail = readdetails.Where(d => d.HouseNo == 4);
+            //readdetails = detail.ToList();
+            //foreach (var d in readdetails)
+            //{
+            //    Console.WriteLine(d.StreetName);
+            //}
+            return readdetails;
+
 
         }
-
-
-        public void createPanel()
+        static public void Serialize(List<properties> details)
         {
-            List<properties> list1 = serialization.read();
-
-            //Creating table Layout panel object
-            TableLayoutPanel tableLayoutPanel1 = new TableLayoutPanel();
-            this.Controls.Add(tableLayoutPanel1);
-            this.AutoSize = true;
-
-            //Clear out the existing controls, we are generating a new table layout
-            tableLayoutPanel1.Controls.Clear();
-            //Clear out the existing row and column styles
-            tableLayoutPanel1.ColumnStyles.Clear();
-            tableLayoutPanel1.RowStyles.Clear();
-            tableLayoutPanel1.AutoSize = true;
-
-            //Now we will generate the table, setting up the row and column counts first
-            tableLayoutPanel1.ColumnCount = 3;
-            tableLayoutPanel1.RowCount = list1.Count;
-
-            Label lb1 = new Label();
-            lb1.Text = string.Format("IP Address");
-            tableLayoutPanel1.Controls.Add(lb1);
-
-            Label lb2 = new Label();
-            lb2.Text = string.Format("Owner");
-            tableLayoutPanel1.Controls.Add(lb2);
-
-            Label lb3 = new Label();
-            lb3.Text = string.Format("Status");
-            tableLayoutPanel1.Controls.Add(lb3);
-
-
-            for (int x = 0; x < tableLayoutPanel1.RowCount; x++)
+            XmlSerializer serializer = new XmlSerializer(typeof(List<properties>));
+            using (TextWriter writer = new StreamWriter(@"E:\plc.xml"))
             {
-                //First add a column
-                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-
-
-                //Next, add a row.  Only do this when once, when creating the first column
-
-                // tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-;
-                TextBox tb1 = new TextBox();
-                tb1.Text = string.Format(list1[x].ipaddress.ToString());  //Finally, add the control to the correct location in the table
-                tableLayoutPanel1.Controls.Add(tb1);
-                TextBox tb2 = new TextBox();
-                tb2.Text = string.Format(list1[x].owner);         //Finally, add the control to the correct location in the table
-                tableLayoutPanel1.Controls.Add(tb2);
-                TextBox tb3 = new TextBox();
-                tb3.Text = string.Format(list1[x].status);         //Finally, add the control to the correct location in the table
-                tableLayoutPanel1.Controls.Add(tb3);
-
+                serializer.Serialize(writer, details);
             }
-        }
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
