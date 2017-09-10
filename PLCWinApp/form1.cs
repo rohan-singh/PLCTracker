@@ -31,6 +31,8 @@ namespace DataAccessLayer
             List<properties> plcdetails = new List<properties>();
             plcdetails.Add(details1);
             plcdetails.Add(details2);
+            
+            //serializing
             Serialize(plcdetails);
 
             List<properties> readdetails = new List<properties>();
