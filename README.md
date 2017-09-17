@@ -1,2 +1,2 @@
 # PLCTracker
-To keep a track of Siemens PLC Devices
+To keep a track of usage of PLC Devices
